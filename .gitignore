@@ -1,0 +1,7 @@
+.vagrant
+src/atlas-variables.json
+
+# This virtual machine disk image is too big for GitHub.
+# We also don't technically need it there because it's
+# already being distributed via HashiCorp's Atlas.
+src/source-disk1.vmdk

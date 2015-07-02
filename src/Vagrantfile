@@ -1,0 +1,39 @@
+# Helpers
+module OS
+  def OS.windows?
+    (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def OS.mac?
+    (/darwin/ =~ RUBY_PLATFORM) != nil
+  end
+
+  def OS.unix?
+    !OS.windows?
+  end
+
+  def OS.linux?
+    OS.unix? and not OS.mac?
+  end
+end
+
+# Set up the host's shared folders.
+app_name = "Bring Your Own Content"
+if OS.mac?
+  app_dir = File.expand_path("~/Library/Application Support/#{app_name}")
+elsif OS.unix?
+  app_dir = File.expand_path("~/.local/#{app_name}")
+# TODO: Configure a Windows branch.
+end
+Dir.mkdir(app_dir) unless File.exists?(app_dir)
+Dir.mkdir(app_dir + "/wordpress-data-vm") unless File.exists?(app_dir + "/wordpress-data-vm")
+Dir.mkdir(app_dir + "/mysql-data-vm") unless File.exists?(app_dir + "/mysql-data-vm")
+
+Vagrant.configure(2) do |config|
+  config.ssh.shell = "sh -l"
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder "#{app_dir}/wordpress-data-vm", "/media/sf_wordpress-vm", owner: "www", group: "www"
+  config.vm.synced_folder "#{app_dir}/mysql-data-vm", "/media/sf_mysql-data-vm", owner: "mysql", group: "mysql"
+  config.vm.provision :shell, path: __FILE__ + "/../bootstrap.sh", args: [ENV['USER']]
+end

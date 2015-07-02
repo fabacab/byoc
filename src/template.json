@@ -1,0 +1,60 @@
+{
+    "variables": {
+        "ATLAS_TOKEN" : "{{env `ATLAS_TOKEN`}}",
+        "ATLAS_ASSET" : "{{env `ATLAS_ASSET`}}",
+        "BYOC_VERSION": "{{env `BYOC_VERSION`}}"
+    },
+    "builders": [
+        {
+            "type": "virtualbox-ovf",
+            "source_path": "source.ovf",
+            "import_flags": [
+                "--eula",
+                "accept"
+            ],
+            "import_opts": "keepnatmacs",
+            "ssh_username": "vagrant",
+            "ssh_password": "vagrant",
+            "ssh_wait_timeout": "1m",
+            "shutdown_command": "/sbin/shutdown",
+            "shutdown_timeout": "2m"
+        }
+    ],
+    "_comment": "The first provisioner removes the Guest Additions ISO from VirtualBox because it's already installed as part of the base image.",
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": ["rm -f /home/vagrant/VBoxGuest*.iso"],
+            "only": ["virtualbox-ovf"]
+        },
+        {
+            "type": "shell",
+            "scripts": [
+                "packer-scripts/cleanup.sh",
+                "packer-scripts/zerodisk.sh"
+            ]
+        }
+    ],
+    "post-processors": [
+        [
+            {
+                "type": "vagrant",
+                "vagrantfile_template": "Vagrantfile",
+                "include": [
+                    "bootstrap.sh"
+                ]
+            },
+            {
+                "type": "atlas",
+                "only": ["virtualbox-ovf"],
+                "token": "{{user `ATLAS_TOKEN`}}",
+                "artifact": "{{user `ATLAS_ASSET`}}",
+                "artifact_type": "vagrant.box",
+                "metadata": {
+                    "provider": "virtualbox",
+                    "version": "{{user `BYOC_VERSION`}}"
+                }
+            }
+        ]
+    ]
+}
