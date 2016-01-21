@@ -2,6 +2,9 @@ This directory provides the source "code" and initial virtual machine images
 that can be used to automatically create new BYOC-like apps. It is provided
 here so that contributions can be upstreamed to the Vagrant base box images.
 
+While you are testing changes to the base box locally you can use Vagrant's
+`vagrant package` command. To distribute your changes, however, read on.
+
 To create your own BYOC-like virtual environment, edit the supplied variable
 sample file(s). You will likely need to edit `atlas-variables.json.sample`,
 copying it to `atlas-variables.json` and inserting your own Atlas username

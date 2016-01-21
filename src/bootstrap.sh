@@ -3,6 +3,11 @@
 readonly HOST_USERNAME="$1"
 readonly WORDPRESS_DIR="/media/sf_wordpress-vm"
 
+# Make sure we have the necessary PHP extensions.
+echo "Installing PHP extensions..."
+sudo tazpkg get-install php-curl
+sudo tazpkg get-install php-openssl
+
 echo "Downloading WordPress..."
 cd "$WORDPRESS_DIR"
 wget -q --no-check-certificate https://wordpress.org/latest.tar.gz
@@ -11,8 +16,8 @@ mv wordpress/* . && rmdir wordpress
 echo "Downloading WordPress plugins..."
 cd wp-content/plugins
 wget -q --no-check-certificate https://downloads.wordpress.org/plugin/diasposter.0.1.9.zip
-wget -q --no-check-certificate https://downloads.wordpress.org/plugin/tumblr-crosspostr.0.8.3.zip
-wget -q --no-check-certificate https://downloads.wordpress.org/plugin/wp-crosspost.0.3.2.zip
+wget -q --no-check-certificate https://downloads.wordpress.org/plugin/tumblr-crosspostr.0.8.4.zip
+wget -q --no-check-certificate https://downloads.wordpress.org/plugin/wp-crosspost.0.3.3.zip
 echo "Installing WordPress plugins..."
 for i in *.zip; do
     unzip "$i" && rm -f "$i"
