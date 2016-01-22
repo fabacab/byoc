@@ -36,4 +36,10 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder "#{app_dir}/wordpress-data-vm", "/media/sf_wordpress-vm", owner: "www", group: "www"
   config.vm.synced_folder "#{app_dir}/mysql-data-vm", "/media/sf_mysql-data-vm", owner: "mysql", group: "mysql"
   config.vm.provision :shell, path: __FILE__ + "/../bootstrap.sh", args: [ENV['USER']]
+  # Always (re)start MySQL on boot, even when not running the full provisioner.
+  # We do this to ensure that MySQL databases located on shared folders are loaded,
+  # since Vagrant will first boot the machine and then mount shared folders, rather
+  # than the other way around (like the original BYOC on VirtualBox config does it).
+  config.vm.provision :shell, inline: "sudo /etc/init.d/mysql stop", run: "always"
+  config.vm.provision :shell, inline: "sudo /etc/init.d/mysql start", run: "always"
 end
