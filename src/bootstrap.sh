@@ -17,10 +17,11 @@ echo "Downloading WordPress plugins..."
 cd wp-content/plugins
 wget -q --no-check-certificate https://downloads.wordpress.org/plugin/diasposter.0.1.9.zip
 wget -q --no-check-certificate https://downloads.wordpress.org/plugin/tumblr-crosspostr.0.8.4.zip
-wget -q --no-check-certificate https://downloads.wordpress.org/plugin/wp-crosspost.0.3.3.zip
+wget -q --no-check-certificate https://downloads.wordpress.org/plugin/wp-crosspost.0.4.zip
 echo "Installing WordPress plugins..."
 for i in *.zip; do
-    unzip "$i" && rm -f "$i"
+    unzip "$i"
+    rm -f "$i"
 done
 
 echo "Setting up MySQL database..."
